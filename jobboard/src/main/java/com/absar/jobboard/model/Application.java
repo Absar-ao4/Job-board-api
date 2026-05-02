@@ -22,8 +22,6 @@ public class Application {
     @ManyToOne
     @JoinColumn(name = "applicant_id")
     private User applicant;
-
-    private String status; // APPLIED, SHORTLISTED, REJECTED
-
+    private String status;
     private LocalDateTime appliedAt;
 }
