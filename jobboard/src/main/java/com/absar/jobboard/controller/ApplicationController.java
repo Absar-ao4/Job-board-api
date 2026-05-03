@@ -25,42 +25,35 @@ public class ApplicationController {
     @Autowired
     private UserRepository userRepository;
 
-    // APPLY for a job
     @PostMapping
     public ResponseEntity<?> applyForJob(
             @RequestParam Long userId,
-            @RequestParam Long jobId) {
-
+            @RequestParam Long jobId)
+    {
         User applicant = userRepository.findById(userId)
                 .orElse(null);
-        if (applicant == null) {
+        if(applicant == null){
             return ResponseEntity.badRequest()
                     .body("User not found");
         }
-
-        if (!applicant.getRole().equals("APPLICANT")) {
+        if(!applicant.getRole().equals("APPLICANT")){
             return ResponseEntity.badRequest()
                     .body("Only applicants can apply for jobs");
         }
-
-        Job job = jobRepository.findById(jobId)
+        Job job=jobRepository.findById(jobId)
                 .orElse(null);
-        if (job == null) {
+        if(job==null){
             return ResponseEntity.badRequest()
                     .body("Job not found");
         }
-
         Application application = new Application();
         application.setApplicant(applicant);
         application.setJob(job);
         application.setStatus("APPLIED");
         application.setAppliedAt(LocalDateTime.now());
-
         Application saved = applicationRepository.save(application);
         return ResponseEntity.ok(saved);
     }
-
-    // GET all applications for a job
     @GetMapping("/job/{jobId}")
     public ResponseEntity<List<Application>> getApplicationsForJob(
             @PathVariable Long jobId) {
@@ -70,26 +63,23 @@ public class ApplicationController {
                 .toList();
         return ResponseEntity.ok(apps);
     }
-
-    // UPDATE application status (recruiter shortlists or rejects)
     @PutMapping("/{id}/status")
     public ResponseEntity<?> updateStatus(
             @PathVariable Long id,
-            @RequestParam String status) {
-
+            @RequestParam String status)
+    {
         Application app = applicationRepository.findById(id)
                 .orElse(null);
-        if (app == null) {
+        if(app==null){
             return ResponseEntity.notFound().build();
         }
-
-        if (!status.equals("APPLIED") &&
-                !status.equals("SHORTLISTED") &&
-                !status.equals("REJECTED")) {
+        if(!status.equals("APPLIED")&&
+                !status.equals("SHORTLISTED")&&
+                !status.equals("REJECTED"))
+        {
             return ResponseEntity.badRequest()
                     .body("Invalid status");
         }
-
         app.setStatus(status);
         applicationRepository.save(app);
         return ResponseEntity.ok(app);
